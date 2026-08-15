@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="MindHaven - A gentle place for difficult days. A safe digital sanctuary for mental wellness and emotional support.">
+    <meta name="theme-color" content="#F6F1E9">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="MindHaven">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕊️</text></svg>">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <title>MindHaven 🕊️ - A Gentle Place for Difficult Days</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="nav-bar" role="navigation" aria-label="Main navigation">
+            <div class="nav-container">
+                <button class="nav-logo" onclick="navigateTo('dashboard')" aria-label="MindHaven Home">
+                    <span class="logo-icon">🕊️</span>
+                    <span class="logo-text">MindHaven</span>
+                </button>
+                <button class="nav-menu-btn" onclick="toggleNavMenu()" aria-label="Menu" aria-expanded="false">
+                    <span class="menu-icon"></span>
+                </button>
+            </div>
+            <div class="nav-menu" id="navMenu" role="menu">
+                <button class="nav-item active-nav" onclick="navigateTo('chat')" role="menuitem">💬 Haven Companion</button>
+                <button class="nav-item" onclick="navigateTo('dashboard')" role="menuitem">🏠 Home</button>
+                <button class="nav-item" onclick="navigateTo('mentalhealth')" role="menuitem">🧠 Learn</button>
+                <button class="nav-item" onclick="navigateTo('coping')" role="menuitem">🧰 Coping Tools</button>
+                <button class="nav-item" onclick="navigateTo('calmspace')" role="menuitem">🧘 Calm Space</button>
+                <button class="nav-item" onclick="navigateTo('journal')" role="menuitem">📔 Journal</button>
+                <button class="nav-item" onclick="navigateTo('insights')" role="menuitem">📊 Insights</button>
+                <button class="nav-item" onclick="navigateTo('achievements')" role="menuitem">🎮 Achievements</button>
+                <button class="nav-item" onclick="navigateTo('search')" role="menuitem">🔎 Search</button>
+                <button class="nav-item" onclick="navigateTo('settings')" role="menuitem">⚙️ Settings</button>
+                <button class="nav-item crisis-btn" onclick="navigateTo('crisis')" role="menuitem">🚨 Crisis Support</button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent">
+            <!-- Chatbot Primary Hub Section -->
+            <section id="chat-section" class="section active">
+                <div class="chat-container">
+                    <!-- Chat Header -->
+                    <header class="chat-header">
+                        <div class="chat-header-info">
+                            <h2>MindHaven Companion 🕊️</h2>
+                            <div id="chatStatusBadge" class="chat-status-badge status-offline">
+                                <span class="status-dot">🔴</span>
+                                <span class="status-text">Offline Companion</span>
+                            </div>
+                        </div>
+                        <div class="chat-header-actions">
+                            <button class="icon-btn" onclick="openContextModal()" title="Privacy & Context Settings" aria-label="Context Settings">⚙️</button>
+                            <button class="icon-btn" onclick="MindHavenChatbot.clearChat()" title="Clear Chat Transcript" aria-label="Clear Chat">🗑️</button>
+                            <button class="icon-btn" onclick="MindHavenSession.exportTranscript()" title="Export Transcript" aria-label="Export Transcript">📥</button>
+                        </div>
+                    </header>
+
+                    <!-- Quick Prompt Pills Carousel -->
+                    <div class="quick-prompts-carousel" id="quickPromptsCarousel">
+                        <button class="quick-pill" onclick="MindHavenChatbot.sendMessage('I feel anxious and overwhelmed right now. Can you help me calm down?')">😟 I feel anxious</button>
+                        <button class="quick-pill" onclick="MindHavenChatbot.sendMessage('I have a negative thought stuck in my head and want to reframe it using CBT.')">💭 Reframe a thought</button>
+                        <button class="quick-pill" onclick="MindHavenChatbot.sendMessage('Can you guide me through a somatic grounding exercise?')">🌱 Guide grounding</button>
+                        <button class="quick-pill" onclick="MindHavenChatbot.sendMessage('My mind is racing and I cannot sleep. What can I do to wind down?')">🌙 Wind down for sleep</button>
+                        <button class="quick-pill" onclick="MindHavenChatbot.sendMessage('I have zero energy today and feel completely burnt out.')">🔋 Low energy / burnout</button>
+                    </div>
+
+                    <!-- Chat Transcript Area -->
+                    <div class="chat-transcript" id="chatTranscript" role="log" aria-live="polite">
+                        <!-- Populated dynamically by MindHavenChatbot -->
+                    </div>
+
+                    <!-- Sticky Input Area -->
+                    <div class="chat-input-bar">
+                        <div class="chat-input-wrapper">
+                            <textarea id="chatInput" class="chat-input" placeholder="Talk with Haven..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();MindHavenChatbot.sendMessage(this.value);}"></textarea>
+                            <button id="chatSendBtn" class="chat-send-btn" onclick="MindHavenChatbot.sendMessage(document.getElementById('chatInput').value)" aria-label="Send Message">➤</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Welcome back 💚</h1>
+                        <p class="tagline">A gentle place for difficult days.</p>
+                    </header>
+
+                    <!-- Daily Check-In -->
+                    <div class="card checkin-card">
+                        <h2>How are you feeling today?</h2>
+                        <div class="mood-selector" id="moodSelector">
+                            <button class="mood-btn" data-mood="calm" aria-label="Calm">😌 Calm</button>
+                            <button class="mood-btn" data-mood="okay" aria-label="Okay">🙂 Okay</button>
+                            <button class="mood-btn" data-mood="anxious" aria-label="Anxious">😟 Anxious</button>
+                            <button class="mood-btn" data-mood="low" aria-label="Low">😞 Low</button>
+                            <button class="mood-btn" data-mood="exhausted" aria-label="Exhausted">😴 Exhausted</button>
+                            <button class="mood-btn" data-mood="overwhelmed" aria-label="Overwhelmed">😵 Overwhelmed</button>
+                            <button class="mood-btn" data-mood="numb" aria-label="Numb">😶 Numb</button>
+                            <button class="mood-btn" data-mood="overthinking" aria-label="Overthinking">💭 Overthinking</button>
+                        </div>
+                        
+                        <!-- Mood Intensity Slider -->
+                        <div class="mood-intensity-section" id="moodIntensitySection" style="display: none;">
+                            <label for="moodIntensity">How intense is this feeling?</label>
+                            <input type="range" id="moodIntensity" min="1" max="10" value="5" class="intensity-slider">
+                            <div class="intensity-labels">
+                                <span>Mild</span>
+                                <span id="intensityValue">5</span>
+                                <span>Intense</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Check-In Notes -->
+                        <div class="checkin-notes-section">
+                            <label for="checkinNotes">Add a note (optional)</label>
+                            <textarea id="checkinNotes" class="journal-textarea" rows="3" placeholder="What's on your mind?"></textarea>
+                        </div>
+                        
+                        <!-- Mood Tags -->
+                        <div class="mood-tags-section">
+                            <label>Add tags (optional)</label>
+                            <div class="tags-input-container">
+                                <input type="text" id="tagInput" placeholder="Type a tag and press Enter" class="tag-input">
+                                <button class="secondary-btn" onclick="addMoodTag()">Add Tag</button>
+                            </div>
+                            <div class="selected-tags" id="selectedTags"></div>
+                        </div>
+                        
+                        <button class="primary-btn" onclick="saveDailyCheckIn()">Save Check-In</button>
+                        
+                        <!-- Mood History Toggle -->
+                        <button class="secondary-btn mood-history-toggle" onclick="toggleMoodHistory()">View Mood History</button>
+                        
+                        <!-- Mood History -->
+                        <div class="mood-history" id="moodHistory" style="display: none;">
+                            <h3>Mood History</h3>
+                            <div id="moodHistoryList"></div>
+                        </div>
+                    </div>
+
+                    <!-- Emotional Weather -->
+                    <div class="card weather-card">
+                        <h2>Emotional Weather</h2>
+                        <div class="weather-grid" id="emotionalWeather">
+                            <div class="weather-item">
+                                <span class="weather-label">Stress</span>
+                                <span class="weather-value" id="stressLevel">-</span>
+                            </div>
+                            <div class="weather-item">
+                                <span class="weather-label">Energy</span>
+                                <span class="weather-value" id="energyLevel">-</span>
+                            </div>
+                            <div class="weather-item">
+                                <span class="weather-label">Mood</span>
+                                <span class="weather-value" id="moodLevel">-</span>
+                            </div>
+                            <div class="weather-item">
+                                <span class="weather-label">Sleep</span>
+                                <span class="weather-value" id="sleepLevel">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tiny Daily Support -->
+                    <div class="card support-card">
+                        <h2>Tiny Daily Support</h2>
+                        <p class="support-subtitle">No pressure. Just gentle suggestions.</p>
+                        <div class="support-suggestions" id="supportSuggestions">
+                            <div class="support-item">
+                                <span class="support-icon">💧</span>
+                                <span class="support-text">Drink water</span>
+                            </div>
+                            <div class="support-item">
+                                <span class="support-icon">🌤</span>
+                                <span class="support-text">Step outside for 5 minutes</span>
+                            </div>
+                            <div class="support-item">
+                                <span class="support-icon">🫂</span>
+                                <span class="support-text">Message someone safe</span>
+                            </div>
+                            <div class="support-item">
+                                <span class="support-icon">🧠</span>
+                                <span class="support-text">Try grounding exercise</span>
+                            </div>
+                            <div class="support-item">
+                                <span class="support-icon">🌙</span>
+                                <span class="support-text">Rest without guilt</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Encouragement -->
+                    <div class="card encouragement-card">
+                        <h2>Daily Encouragement</h2>
+                        <p class="encouragement-text" id="dailyEncouragement">Getting through today is enough.</p>
+                    </div>
+
+                    <!-- Quick Access -->
+                    <div class="card quick-access-card">
+                        <h2>Quick Access</h2>
+                        <div class="quick-access-grid">
+                            <button class="quick-btn panic-btn" onclick="navigateTo('coping', 'panic')">
+                                <span class="quick-icon">😨</span>
+                                <span class="quick-label">Panic Relief</span>
+                            </button>
+                            <button class="quick-btn calm-btn" onclick="navigateTo('calmspace')">
+                                <span class="quick-icon">🌙</span>
+                                <span class="quick-label">Calm Space</span>
+                            </button>
+                            <button class="quick-btn journal-btn" onclick="navigateTo('journal')">
+                                <span class="quick-icon">📔</span>
+                                <span class="quick-label">Journal</span>
+                            </button>
+                            <button class="quick-btn breathing-btn" onclick="navigateTo('coping', 'breathing')">
+                                <span class="quick-icon">🫁</span>
+                                <span class="quick-label">Breathing</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mental Health Learning Hub Section -->
+            <section id="mentalhealth-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Mental Health Learning Hub 🧠</h1>
+                        <p class="tagline">Learn about mental health, gently.</p>
+                    </header>
+
+                    <div class="hub-grid">
+                        <button class="hub-card anxiety-card" onclick="navigateTo('mentalhealth', 'anxiety')">
+                            <span class="hub-icon">😰</span>
+                            <h3>Anxiety</h3>
+                            <p>Understanding anxiety, panic, and overthinking</p>
+                        </button>
+                        <button class="hub-card depression-card" onclick="navigateTo('mentalhealth', 'depression')">
+                            <span class="hub-icon">🌧️</span>
+                            <h3>Depression</h3>
+                            <p>Navigating low mood, burnout, and hopelessness</p>
+                        </button>
+                        <button class="hub-card loneliness-card" onclick="navigateTo('mentalhealth', 'loneliness')">
+                            <span class="hub-icon">🫂</span>
+                            <h3>Loneliness</h3>
+                            <p>Connection, belonging, and reaching out</p>
+                        </button>
+                        <button class="hub-card adhd-card" onclick="navigateTo('mentalhealth', 'adhd')">
+                            <span class="hub-icon">⚡</span>
+                            <h3>ADHD</h3>
+                            <p>Executive function, focus, and dopamine</p>
+                        </button>
+                        <button class="hub-card ocd-card" onclick="navigateTo('mentalhealth', 'ocd')">
+                            <span class="hub-icon">🔁</span>
+                            <h3>OCD</h3>
+                            <p>Intrusive thoughts, compulsions, and uncertainty</p>
+                        </button>
+                        <button class="hub-card stress-card" onclick="navigateTo('mentalhealth', 'stress')">
+                            <span class="hub-icon">🌪️</span>
+                            <h3>Stress & Burnout</h3>
+                            <p>Pressure, perfectionism, and nervous system</p>
+                        </button>
+                    </div>
+
+                    <!-- Content Area for individual topics -->
+                    <div id="mentalhealth-content" class="content-area hidden"></div>
+                </div>
+            </section>
+
+            <!-- Coping Toolkit Section -->
+            <section id="coping-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Coping Toolkit 🧰</h1>
+                        <p class="tagline">Gentle tools for difficult moments.</p>
+                    </header>
+
+                    <div class="coping-grid">
+                        <button class="coping-card panic-relief-card" onclick="openPanicRelief()">
+                            <span class="coping-icon">😨</span>
+                            <h3>Panic Relief</h3>
+                            <p>Immediate calm for overwhelming moments</p>
+                        </button>
+                        <button class="coping-card calm-down-card" onclick="openCalmDown()">
+                            <span class="coping-icon">🌙</span>
+                            <h3>Calm Down</h3>
+                            <p>Peaceful sanctuary space</p>
+                        </button>
+                        <button class="coping-card overthinking-card" onclick="openOverthinkingBreaker()">
+                            <span class="coping-icon">🧠</span>
+                            <h3>Overthinking Breaker</h3>
+                            <p>Gentle thought reflection</p>
+                        </button>
+                        <button class="coping-card low-energy-card" onclick="openLowEnergyMode()">
+                            <span class="coping-icon">😔</span>
+                            <h3>Low Energy Mode</h3>
+                            <p>Tiny steps for hard days</p>
+                        </button>
+                        <button class="coping-card loneliness-card" onclick="openLonelinessCompanion()">
+                            <span class="coping-icon">🫂</span>
+                            <h3>Loneliness Companion</h3>
+                            <p>Gentle connection support</p>
+                        </button>
+                        <button class="coping-card breathing-card" onclick="openBreathingGuide()">
+                            <span class="coping-icon">🫁</span>
+                            <h3>Breathing Guide</h3>
+                            <p>Calm your nervous system</p>
+                        </button>
+                        <button class="coping-card grounding-card" onclick="openGroundingExercise()">
+                            <span class="coping-icon">🌍</span>
+                            <h3>Grounding Exercise</h3>
+                            <p>5-4-3-2-1 technique</p>
+                        </button>
+                    </div>
+
+                    <!-- Tool Content Area -->
+                    <div id="coping-content" class="content-area hidden"></div>
+                </div>
+            </section>
+
+            <!-- Calm Space Section -->
+            <section id="calmspace-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Calm Space 🧘</h1>
+                        <p class="tagline">Your peaceful sanctuary.</p>
+                    </header>
+
+                    <div class="ambience-grid">
+                        <button class="ambience-card rain-card" onclick="setAmbience('rain')">
+                            <span class="ambience-icon">🌧️</span>
+                            <h3>Rain</h3>
+                        </button>
+                        <button class="ambience-card forest-card" onclick="setAmbience('forest')">
+                            <span class="ambience-icon">🍃</span>
+                            <h3>Forest</h3>
+                        </button>
+                        <button class="ambience-card ocean-card" onclick="setAmbience('ocean')">
+                            <span class="ambience-icon">🌊</span>
+                            <h3>Ocean</h3>
+                        </button>
+                        <button class="ambience-card fireplace-card" onclick="setAmbience('fireplace')">
+                            <span class="ambience-icon">🔥</span>
+                            <h3>Fireplace</h3>
+                        </button>
+                        <button class="ambience-card night-card" onclick="setAmbience('night')">
+                            <span class="ambience-icon">🌙</span>
+                            <h3>Night Sky</h3>
+                        </button>
+                    </div>
+
+                    <!-- Breathing Visualizer -->
+                    <div class="card breathing-card">
+                        <h2>Breathing Exercise</h2>
+                        <div class="breathing-circle" id="breathingCircle">
+                            <span class="breathing-text" id="breathingText">Breathe</span>
+                        </div>
+                        <button class="primary-btn" onclick="startBreathingExercise()">Start Breathing</button>
+                    </div>
+
+                    <!-- Calm Quote -->
+                    <div class="card quote-card">
+                        <p class="quote-text" id="calmQuote">"This moment is temporary. You will get through this."</p>
+                    </div>
+
+                    <!-- Audio Controls -->
+                    <div class="card audio-controls-card">
+                        <h2>Ambient Sounds</h2>
+                        <div class="audio-controls">
+                            <button class="audio-btn" onclick="toggleAudio()" id="audioToggle">🔇 Play Sound</button>
+                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50" aria-label="Volume">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Journal Section -->
+            <section id="journal-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Private Journal 📔</h1>
+                        <p class="tagline">A safe space for your thoughts.</p>
+                    </header>
+
+                    <div class="card journal-prompt-card">
+                        <h2>Today's Prompt</h2>
+                        <p class="journal-prompt" id="journalPrompt">What feels heavy today?</p>
+                    </div>
+
+                    <div class="card journal-entry-card">
+                        <textarea 
+                            class="journal-textarea" 
+                            id="journalEntry"
+                            placeholder="Write whatever feels right for you today. This is a completely private space..."
+                            aria-label="Journal entry"
+                        ></textarea>
+                        <div class="journal-actions">
+                            <button class="primary-btn" onclick="saveJournalEntry()">Save Entry</button>
+                            <button class="secondary-btn" onclick="getNewPrompt()">New Prompt</button>
+                        </div>
+                    </div>
+
+                    <div class="card journal-history-card">
+                        <h2>Past Entries</h2>
+                        <div class="journal-history" id="journalHistory">
+                            <p class="empty-state">No entries yet. Start writing whenever you're ready.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gratitude Journal Section -->
+            <section id="gratitude-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Gratitude Journal 🙏</h1>
+                        <p class="tagline">Cultivate appreciation for life's gifts.</p>
+                    </header>
+
+                    <div class="card gratitude-streak-card">
+                        <h2>Your Gratitude Streak</h2>
+                        <div class="streak-display">
+                            <span class="streak-number" id="gratitudeStreak">0</span>
+                            <span class="streak-label">days</span>
+                        </div>
+                        <p class="streak-subtitle">Longest streak: <span id="gratitudeLongestStreak">0</span> days</p>
+                    </div>
+
+                    <div class="card gratitude-prompt-card">
+                        <h2>Daily Prompt</h2>
+                        <p class="gratitude-prompt" id="gratitudePrompt">What made you smile today?</p>
+                        <button class="secondary-btn" onclick="setGratitudePrompt()">New Prompt</button>
+                    </div>
+
+                    <div class="card gratitude-entry-card">
+                        <h2>Three Things You're Grateful For</h2>
+                        <div class="gratitude-inputs">
+                            <div class="gratitude-input-group">
+                                <label>1.</label>
+                                <input type="text" id="gratitude1" class="gratitude-input" placeholder="First thing you're grateful for...">
+                            </div>
+                            <div class="gratitude-input-group">
+                                <label>2.</label>
+                                <input type="text" id="gratitude2" class="gratitude-input" placeholder="Second thing you're grateful for...">
+                            </div>
+                            <div class="gratitude-input-group">
+                                <label>3.</label>
+                                <input type="text" id="gratitude3" class="gratitude-input" placeholder="Third thing you're grateful for...">
+                            </div>
+                        </div>
+                        <div class="gratitude-note-section">
+                            <label for="gratitudeNote">Add a note (optional)</label>
+                            <textarea id="gratitudeNote" class="journal-textarea" rows="3" placeholder="Why are these things meaningful to you?"></textarea>
+                        </div>
+                        <button class="primary-btn" onclick="saveGratitudeEntry()">Save Gratitude Entry</button>
+                    </div>
+
+                    <button class="secondary-btn gratitude-history-toggle" onclick="toggleGratitudeHistory()">View History</button>
+
+                    <div class="card gratitude-history" id="gratitudeHistory" style="display: none;">
+                        <h2>Gratitude History</h2>
+                        <div class="gratitude-history-list" id="gratitudeHistoryList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mood Calendar Section -->
+            <section id="moodcalendar-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Mood Calendar 📅</h1>
+                        <p class="tagline">Visualize your emotional patterns over time.</p>
+                    </header>
+
+                    <div class="card mood-calendar-card">
+                        <div id="moodCalendarContainer"></div>
+                    </div>
+
+                    <div class="card mood-stats-card">
+                        <h2>Mood Statistics</h2>
+                        <div id="moodStatistics"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Daily Check-In Section -->
+            <section id="dailycheckin-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Daily Check-In 🌅</h1>
+                        <p class="tagline">Start and end your day with intention.</p>
+                    </header>
+
+                    <div class="card checkin-type-card">
+                        <h2>Choose Your Check-In</h2>
+                        <div class="checkin-type-buttons">
+                            <button class="checkin-type-btn morning-btn" onclick="startCheckIn('morning')">
+                                <span class="checkin-icon">☀️</span>
+                                <span class="checkin-label">Morning Check-In</span>
+                                <span class="checkin-subtitle">Start your day mindfully</span>
+                            </button>
+                            <button class="checkin-type-btn evening-btn" onclick="startCheckIn('evening')">
+                                <span class="checkin-icon">🌙</span>
+                                <span class="checkin-label">Evening Reflection</span>
+                                <span class="checkin-subtitle">Reflect on your day</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card checkin-stats-card">
+                        <h2>Your Check-In Streak</h2>
+                        <div class="streak-display">
+                            <span class="streak-number" id="checkInStreak">0</span>
+                            <span class="streak-label">days</span>
+                        </div>
+                    </div>
+
+                    <div class="card checkin-customization-card">
+                        <h2>Customize Questions</h2>
+                        <p class="customization-subtitle">Personalize your check-in questions</p>
+                        <button class="secondary-btn" onclick="showQuestionCustomization()">Customize Questions</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Streaks Section -->
+            <section id="streaks-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Streaks 🔥</h1>
+                        <p class="tagline">Track your consistency and build healthy habits.</p>
+                    </header>
+
+                    <div id="streakDashboard"></div>
+                </div>
+            </section>
+
+            <!-- Breathing Section -->
+            <section id="breathing-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Guided Breathing 🌬️</h1>
+                        <p class="tagline">Calming exercises for anxiety and stress relief.</p>
+                    </header>
+
+                    <div class="card breathing-intro-card">
+                        <h2>About Breathing Exercises</h2>
+                        <p>Controlled breathing can help reduce stress, lower blood pressure, and promote relaxation. Choose an exercise below to begin.</p>
+                    </div>
+
+                    <div class="breathing-exercises" id="breathingExercises"></div>
+                </div>
+            </section>
+
+            <!-- CBT Section -->
+            <section id="cbt-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>CBT Thought Records 🧠</h1>
+                        <p class="tagline">Challenge negative thoughts with cognitive behavioral therapy.</p>
+                    </header>
+
+                    <div class="card cbt-intro-card">
+                        <h2>About CBT Thought Records</h2>
+                        <p>Cognitive Behavioral Therapy (CBT) helps you identify and challenge negative thought patterns. Use thought records to examine situations, automatic thoughts, and develop more balanced perspectives.</p>
+                        <button class="primary-btn" onclick="startNewThoughtRecord()">Create New Record</button>
+                    </div>
+
+                    <div class="card cbt-history-card">
+                        <h2>Your Thought Records</h2>
+                        <div class="cbt-history" id="cbtHistory"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Triggers Section -->
+            <section id="triggers-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Trigger Tracking 🎯</h1>
+                        <p class="tagline">Identify and understand your emotional triggers.</p>
+                    </header>
+
+                    <div class="card trigger-intro-card">
+                        <h2>About Trigger Tracking</h2>
+                        <p>Understanding your triggers is key to managing your mental health. Log situations, events, or thoughts that trigger negative emotions to identify patterns and develop coping strategies.</p>
+                        <button class="primary-btn" onclick="startNewTriggerRecord()">Log a Trigger</button>
+                    </div>
+
+                    <div class="card trigger-stats-card">
+                        <h2>Trigger Statistics</h2>
+                        <div id="triggerStats"></div>
+                    </div>
+
+                    <div class="card trigger-history-card">
+                        <h2>Your Trigger History</h2>
+                        <div class="trigger-history" id="triggerHistory"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sleep Section -->
+            <section id="sleep-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Sleep Tracker 😴</h1>
+                        <p class="tagline">Monitor your sleep patterns for better rest.</p>
+                    </header>
+
+                    <div class="card sleep-intro-card">
+                        <h2>About Sleep Tracking</h2>
+                        <p>Quality sleep is essential for mental health. Track your bedtime, wake time, sleep quality, and factors affecting your sleep to identify patterns and improve your rest.</p>
+                        <button class="primary-btn" onclick="startNewSleepRecord()">Log Sleep</button>
+                    </div>
+
+                    <div class="card sleep-stats-card">
+                        <h2>Sleep Statistics</h2>
+                        <div id="sleepStats"></div>
+                    </div>
+
+                    <div class="card sleep-history-card">
+                        <h2>Your Sleep History</h2>
+                        <div class="sleep-history" id="sleepHistory"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reflection Section -->
+            <section id="reflection-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Daily Reflection 📝</h1>
+                        <p class="tagline">Take a moment to reflect on your day.</p>
+                    </header>
+
+                    <div class="card daily-prompt-card">
+                        <h2>Today's Prompt</h2>
+                        <div id="dailyPrompt"></div>
+                    </div>
+
+                    <div class="card reflection-answer-card">
+                        <h2>Your Reflection</h2>
+                        <textarea id="reflectionAnswer" rows="5" placeholder="Write your reflection here..."></textarea>
+                        <button class="primary-btn" onclick="saveReflectionEntry()">Save Reflection</button>
+                    </div>
+
+                    <div class="card reflection-history-card">
+                        <h2>Your Reflection History</h2>
+                        <div class="reflection-history" id="reflectionHistory"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recommendations Section -->
+            <section id="recommendations-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Personalized Tips 💡</h1>
+                        <p class="tagline">Suggestions based on your patterns and activities.</p>
+                    </header>
+
+                    <div class="card recommendations-intro-card">
+                        <h2>About Personalized Tips</h2>
+                        <p>These recommendations are generated based on your mood patterns, sleep quality, triggers, and activity history. They're designed to help you build healthy habits and improve your mental wellness.</p>
+                        <button class="secondary-btn" onclick="refreshRecommendations()">🔄 Refresh Tips</button>
+                    </div>
+
+                    <div class="card recommendations-list-card">
+                        <h2>Your Recommendations</h2>
+                        <div class="recommendations-list" id="recommendationsList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resources Section -->
+            <section id="resources-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Resource Library 📚</h1>
+                        <p class="tagline">Tools and techniques for your mental wellness journey.</p>
+                    </header>
+
+                    <div class="card resources-intro-card">
+                        <h2>About the Resource Library</h2>
+                        <p>Explore curated resources for anxiety, depression, sleep, stress management, crisis support, and self-care. Save your favorites for quick access.</p>
+                    </div>
+
+                    <div class="card favorites-card">
+                        <h2>Your Favorites ❤️</h2>
+                        <div class="favorites-list" id="favoritesList"></div>
+                    </div>
+
+                    <div class="card resources-library-card">
+                        <h2>All Resources</h2>
+                        <div class="resources-library" id="resourcesLibrary"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Insights Section -->
+            <section id="insights-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Emotional Insights 📊</h1>
+                        <p class="tagline">Gentle pattern recognition.</p>
+                    </header>
+
+                    <div class="card insights-summary-card">
+                        <h2>Your Patterns</h2>
+                        <div class="insights-list" id="insightsList">
+                            <p class="empty-state">Loading insights...</p>
+                        </div>
+                    </div>
+
+                    <div class="card progress-dashboard-card">
+                        <h2>Progress Dashboard</h2>
+                        <div id="progressDashboard"></div>
+                    </div>
+
+                    <div class="card insights-suggestions-card">
+                        <h2>Gentle Suggestions</h2>
+                        <div class="suggestions-list" id="suggestionsList">
+                            <p class="empty-state">Based on your patterns, we'll share gentle suggestions here.</p>
+                        </div>
+                    </div>
+
+                    <div class="card mood-trend-card">
+                        <h2>Mood Trend</h2>
+                        <div class="mood-chart" id="moodChart">
+                            <p class="empty-state">Your mood trends will appear here over time.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Crisis Support Section -->
+            <section id="crisis-section" class="section">
+                <div class="container">
+                    <header class="section-header crisis-header">
+                        <h1>Crisis Support 🚨</h1>
+                        <p class="tagline">You are not alone. Help is available.</p>
+                    </header>
+
+                    <div class="card crisis-notice-card">
+                        <div class="crisis-notice">
+                            <p class="crisis-text"><strong>Important:</strong> MindHaven is not a crisis service or replacement for professional help. If you are in immediate danger, please contact emergency services.</p>
+                        </div>
+                    </div>
+
+                    <div class="card crisis-resources-card">
+                        <h2>Immediate Support</h2>
+                        <div class="crisis-resources">
+                            <a href="tel:988" class="crisis-link">
+                                <span class="crisis-icon">📞</span>
+                                <div>
+                                    <strong>Crisis Lifeline (US)</strong>
+                                    <p>988</p>
+                                </div>
+                            </a>
+                            <a href="tel:111" class="crisis-link">
+                                <span class="crisis-icon">📞</span>
+                                <div>
+                                    <strong>NHS Helpline (UK)</strong>
+                                    <p>111</p>
+                                </div>
+                            </a>
+                            <a href="https://www.iasp.info/resources/Crisis_Centres/" target="_blank" rel="noopener" class="crisis-link">
+                                <span class="crisis-icon">🌍</span>
+                                <div>
+                                    <strong>International Crisis Resources</strong>
+                                    <p>Find help in your country</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card crisis-safety-card">
+                        <h2>Safety Planning</h2>
+                        <div class="safety-planning">
+                            <div class="safety-step">
+                                <span class="step-number">1</span>
+                                <p>Remove any harmful objects from your immediate area</p>
+                            </div>
+                            <div class="safety-step">
+                                <span class="step-number">2</span>
+                                <p>Contact someone you trust</p>
+                            </div>
+                            <div class="safety-step">
+                                <span class="step-number">3</span>
+                                <p>Call a crisis hotline or emergency services</p>
+                            </div>
+                            <div class="safety-step">
+                                <span class="step-number">4</span>
+                                <p>Go to a safe place if possible</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card crisis-grounding-card">
+                        <h2>Grounding for This Moment</h2>
+                        <p class="crisis-grounding-text">Right now, in this moment, you are safe. Focus on your breath. Feel your feet on the ground. You can get through this moment, and then the next.</p>
+                        <button class="primary-btn" onclick="navigateTo('coping', 'grounding')">Try Grounding Exercise</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Achievements Section -->
+            <section id="achievements-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Gentle Achievements 🎮</h1>
+                        <p class="tagline>Celebrating tiny wins. No pressure.</p>
+                    </header>
+
+                    <div class="card achievements-stats-card">
+                        <h2>Your Journey</h2>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-value" id="daysVisited">0</span>
+                                <span class="stat-label">Days Visited</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="checkInsCompleted">0</span>
+                                <span class="stat-label">Check-Ins</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="journalEntries">0</span>
+                                <span class="stat-label">Journal Entries</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="copingToolsUsed">0</span>
+                                <span class="stat-label">Tools Used</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card achievements-list-card">
+                        <h2>Achievements</h2>
+                        <div class="achievements-list" id="achievementsList">
+                            <div class="achievement-item locked">
+                                <span class="achievement-icon">🌱</span>
+                                <div class="achievement-info">
+                                    <h3>First Step</h3>
+                                    <p>Complete your first check-in</p>
+                                </div>
+                                <span class="achievement-status">🔒</span>
+                            </div>
+                            <div class="achievement-item locked">
+                                <span class="achievement-icon">💧</span>
+                                <div class="achievement-info">
+                                    <h3>Hydrated Heart</h3>
+                                    <p>Complete a hydration suggestion</p>
+                                </div>
+                                <span class="achievement-status">🔒</span>
+                            </div>
+                            <div class="achievement-item locked">
+                                <span class="achievement-icon">🧠</span>
+                                <div class="achievement-info">
+                                    <h3>Grounded</h3>
+                                    <p>Try a grounding exercise</p>
+                                </div>
+                                <span class="achievement-status">🔒</span>
+                            </div>
+                            <div class="achievement-item locked">
+                                <span class="achievement-icon">📔</span>
+                                <div class="achievement-info">
+                                    <h3>First Reflection</h3>
+                                    <p>Write your first journal entry</p>
+                                </div>
+                                <span class="achievement-status">🔒</span>
+                            </div>
+                            <div class="achievement-item locked">
+                                <span class="achievement-icon">🌙</span>
+                                <div class="achievement-info">
+                                    <h3>Rested</h3>
+                                    <p>Use calm space</p>
+                                </div>
+                                <span class="achievement-status">🔒</span>
+                            </div>
+                            <div class="achievement-item locked">
+                                <span class="achievement-icon">🌱</span>
+                                <div class="achievement-info">
+                                    <h3>7-Day Streak</h3>
+                                    <p>Visit MindHaven 7 days in a row</p>
+                                </div>
+                                <span class="achievement-status">🔒</span>
+                            </div>
+                            <div class="achievement-item locked">
+                                <span class="achievement-icon">🫶</span>
+                                <div class="achievement-info">
+                                    <h3>Connected</h3>
+                                    <p>Reach out to someone</p>
+                                </div>
+                                <span class="achievement-status">🔒</span>
+                            </div>
+                            <div class="achievement-item locked">
+                                <span class="achievement-icon">🧘</span>
+                                <div class="achievement-info">
+                                    <h3>Peaceful Mind</h3>
+                                    <p>Use 5 different coping tools</p>
+                                </div>
+                                <span class="achievement-status">🔒</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search Section -->
+            <section id="search-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Search 🔎</h1>
+                        <p class="tagline">Find what you need, gently.</p>
+                    </header>
+
+                    <div class="card search-card">
+                        <input 
+                            type="search" 
+                            class="search-input" 
+                            id="searchInput"
+                            placeholder="Search for anxiety, stress, coping..."
+                            aria-label="Search"
+                            oninput="performSearch(this.value)"
+                        >
+                    </div>
+
+                    <div class="card search-results-card">
+                        <h2>Results</h2>
+                        <div class="search-results" id="searchResults">
+                            <p class="empty-state">Start typing to search...</p>
+                        </div>
+                    </div>
+
+                    <div class="card popular-topics-card">
+                        <h2>Popular Topics</h2>
+                        <div class="popular-tags">
+                            <button class="tag-btn" onclick="searchFor('anxiety')">anxiety</button>
+                            <button class="tag-btn" onclick="searchFor('stress')">stress</button>
+                            <button class="tag-btn" onclick="searchFor('depression')">depression</button>
+                            <button class="tag-btn" onclick="searchFor('panic')">panic</button>
+                            <button class="tag-btn" onclick="searchFor('sleep')">sleep</button>
+                            <button class="tag-btn" onclick="searchFor('adhd')">adhd</button>
+                            <button class="tag-btn" onclick="searchFor('loneliness')">loneliness</button>
+                            <button class="tag-btn" onclick="searchFor('burnout')">burnout</button>
+                            <button class="tag-btn" onclick="searchFor('grounding')">grounding</button>
+                            <button class="tag-btn" onclick="searchFor('breathing')">breathing</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h1>Settings ⚙️</h1>
+                        <p class="tagline">Customize your experience.</p>
+                    </header>
+
+                    <div class="card settings-card">
+                        <h2>Appearance</h2>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Dark Mode</h3>
+                                <p>Easier on the eyes at night</p>
+                            </div>
+                            <button class="toggle-btn" onclick="toggleDarkMode()" id="darkModeToggle" aria-label="Toggle dark mode">
+                                <span class="toggle-slider"></span>
+                            </button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Auto Dark Mode</h3>
+                                <p>Automatically switch based on time</p>
+                            </div>
+                            <button class="toggle-btn" onclick="toggleDarkModeSchedule()" id="darkModeScheduleToggle" aria-label="Toggle auto dark mode">
+                                <span class="toggle-slider"></span>
+                            </button>
+                        </div>
+                        <div class="setting-item dark-mode-schedule-options" id="darkModeScheduleOptions">
+                            <div class="setting-info">
+                                <h3>Dark Mode Hours</h3>
+                                <p>Set when dark mode activates</p>
+                            </div>
+                            <div class="schedule-time-controls">
+                                <div class="time-control">
+                                    <label>From:</label>
+                                    <input type="time" id="darkModeStartTime" value="20:00" onchange="updateDarkModeScheduleTime('startTime', this.value)">
+                                </div>
+                                <div class="time-control">
+                                    <label>To:</label>
+                                    <input type="time" id="darkModeEndTime" value="07:00" onchange="updateDarkModeScheduleTime('endTime', this.value)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Text Size</h3>
+                                <p>Adjust text for comfort</p>
+                            </div>
+                            <div class="text-size-controls">
+                                <button class="size-btn" onclick="setTextSize('small')" aria-label="Small text">A</button>
+                                <button class="size-btn active" onclick="setTextSize('medium')" aria-label="Medium text">A</button>
+                                <button class="size-btn" onclick="setTextSize('large')" aria-label="Large text">A</button>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Color Theme</h3>
+                                <p>Personalize your experience</p>
+                            </div>
+                            <div class="theme-controls">
+                                <button class="theme-btn" onclick="setTheme('default')" style="background: #A8C3A1" title="Default"></button>
+                                <button class="theme-btn" onclick="setTheme('ocean')" style="background: #7CB8A6" title="Ocean"></button>
+                                <button class="theme-btn" onclick="setTheme('sunset')" style="background: #FFB74D" title="Sunset"></button>
+                                <button class="theme-btn" onclick="setTheme('lavender')" style="background: #B8A7D1" title="Lavender"></button>
+                                <button class="theme-btn" onclick="setTheme('forest')" style="background: #7CB8A6" title="Forest"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card settings-card">
+                        <h2>Accessibility</h2>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Reduced Motion</h3>
+                                <p>Minimize animations for comfort</p>
+                            </div>
+                            <button class="toggle-btn" onclick="toggleReducedMotion()" id="reducedMotionToggle" aria-label="Toggle reduced motion">
+                                <span class="toggle-slider"></span>
+                            </button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Keyboard Shortcuts</h3>
+                                <p>Enable keyboard navigation</p>
+                            </div>
+                            <button class="toggle-btn" onclick="toggleShortcuts()" id="shortcutsToggle" aria-label="Toggle keyboard shortcuts">
+                                <span class="toggle-slider"></span>
+                            </button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>View Shortcuts</h3>
+                                <p>See all keyboard shortcuts</p>
+                            </div>
+                            <button class="secondary-btn" onclick="showShortcutsModal()">View Shortcuts</button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Swipe Navigation</h3>
+                                <p>Enable swipe gestures for navigation</p>
+                            </div>
+                            <button class="toggle-btn" onclick="toggleSwipeNav()" id="swipeNavToggle" aria-label="Toggle swipe navigation">
+                                <span class="toggle-slider"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card settings-card">
+                        <h2>Audio</h2>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Ambient Sounds</h3>
+                                <p>Enable calming audio in calm space</p>
+                            </div>
+                            <button class="toggle-btn" onclick="toggleAmbientSounds()" id="ambientSoundsToggle" aria-label="Toggle ambient sounds">
+                                <span class="toggle-slider"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card settings-card">
+                        <h2>Data Management</h2>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Export All Data</h3>
+                                <p>Download a complete backup of all your data</p>
+                            </div>
+                            <button class="primary-btn" onclick="exportAllData()">Export All</button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Import Data</h3>
+                                <p>Restore from a backup file</p>
+                            </div>
+                            <input type="file" id="importFile" accept=".json" onchange="importSettings(event)" style="display: none;">
+                            <button class="secondary-btn" onclick="document.getElementById('importFile').click()">Import</button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Export Mood Data</h3>
+                                <p>Download only your mood tracking data</p>
+                            </div>
+                            <button class="secondary-btn" onclick="exportSelectiveData('moods')">Export</button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Export Journal</h3>
+                                <p>Download only your journal entries</p>
+                            </div>
+                            <button class="secondary-btn" onclick="exportSelectiveData('journal')">Export</button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Export Gratitude</h3>
+                                <p>Download only your gratitude entries</p>
+                            </div>
+                            <button class="secondary-btn" onclick="exportSelectiveData('gratitude')">Export</button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Export Check-Ins</h3>
+                                <p>Download only your daily check-ins</p>
+                            </div>
+                            <button class="secondary-btn" onclick="exportSelectiveData('checkins')">Export</button>
+                        </div>
+                    </div>
+
+                    <div class="card settings-card">
+                        <h2>App Installation</h2>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Install MindHaven</h3>
+                                <p>Add to home screen for offline access</p>
+                            </div>
+                            <button class="primary-btn" onclick="showManualInstallPrompt()">Install App</button>
+                        </div>
+                    </div>
+
+                    <div class="card settings-card">
+                        <h2>Privacy</h2>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Clear All Data</h3>
+                                <p>Delete all your stored information</p>
+                            </div>
+                            <button class="danger-btn" onclick="clearAllData()">Clear Data</button>
+                        </div>
+                    </div>
+
+                    <div class="card about-card">
+                        <h2>About MindHaven</h2>
+                        <p>MindHaven is a safe digital sanctuary for mental wellness and emotional support. It is not a replacement for professional therapy or medical care.</p>
+                        <p class="version">Version 1.0.0</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Assessment Section -->
+            <section id="assessment-section" class="section">
+                <div class="section-header">
+                    <h1>Life Assessment Center</h1>
+                    <p>Understand your wellness across different dimensions</p>
+                </div>
+                <div class="section-content">
+                    <div id="assessment-dashboard">
+                        <!-- Assessment dashboard will be rendered here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Goals Section -->
+            <section id="goals-section" class="section">
+                <div class="section-header">
+                    <h1>Goals & Habits</h1>
+                    <p>Track your goals and build positive habits</p>
+                </div>
+                <div class="section-content">
+                    <div id="goals-dashboard">
+                        <!-- Goals dashboard will be rendered here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Decisions Section -->
+            <section id="decisions-section" class="section">
+                <div class="section-header">
+                    <h1>Decision Support</h1>
+                    <p>Structured frameworks for making difficult decisions</p>
+                </div>
+                <div class="section-content">
+                    <div id="decisions-dashboard">
+                        <!-- Decisions dashboard will be rendered here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Student Section -->
+            <section id="student-section" class="section">
+                <div class="section-header">
+                    <h1>Student Support Hub</h1>
+                    <p>Academic stress management and study support</p>
+                </div>
+                <div class="section-content">
+                    <div id="student-dashboard">
+                        <!-- Student dashboard will be rendered here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Support Circle Section -->
+            <section id="supportcircle-section" class="section">
+                <div class="section-header">
+                    <h1>Support Circle</h1>
+                    <p>Build and manage your support network</p>
+                </div>
+                <div class="section-content">
+                    <div id="support-circle-dashboard">
+                        <!-- Support circle dashboard will be rendered here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Safety Plan Section -->
+            <section id="safetyplan-section" class="section">
+                <div class="section-header">
+                    <h1>Safety Plan</h1>
+                    <p>Create and manage your crisis safety plan</p>
+                </div>
+                <div class="section-content">
+                    <div id="safety-plan-dashboard">
+                        <!-- Safety plan dashboard will be rendered here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation (Mobile) -->
+        <nav class="bottom-nav" role="navigation" aria-label="Mobile Navigation">
+            <button class="bottom-nav-item active" data-section="chat" onclick="navigateTo('chat')" aria-label="Chat Companion">
+                <span class="nav-icon">💬</span>
+                <span class="nav-label">Chat</span>
+            </button>
+            <button class="bottom-nav-item" data-section="dashboard" onclick="navigateTo('dashboard')" aria-label="Home Dashboard">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="bottom-nav-item" data-section="coping" onclick="navigateTo('coping')" aria-label="Coping Tools">
+                <span class="nav-icon">🧘</span>
+                <span class="nav-label">Tools</span>
+            </button>
+            <button class="bottom-nav-item" data-section="mentalhealth" onclick="navigateTo('mentalhealth')" aria-label="Learn Articles">
+                <span class="nav-icon">📚</span>
+                <span class="nav-label">Learn</span>
+            </button>
+            <button class="bottom-nav-item" data-section="menu" onclick="toggleNavMenu()" aria-label="More Menu">
+                <span class="nav-icon">☰</span>
+                <span class="nav-label">Menu</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Privacy & Context Settings Modal -->
+    <div id="contextModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeContextModal()">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>🔒 Context & Privacy Settings</h3>
+                <button class="modal-close-btn" onclick="closeContextModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="settings-desc">Choose what local data Haven companion can access during chat. Your data never leaves your device.</p>
+                <div class="privacy-option">
+                    <label class="toggle-label-row">
+                        <input type="checkbox" id="contextMoodToggle" onchange="MindHavenContext.updatePermissions({includeMood: this.checked})" checked>
+                        <span>Share recent mood check-in</span>
+                    </label>
+                </div>
+                <div class="privacy-option">
+                    <label class="toggle-label-row">
+                        <input type="checkbox" id="contextCopingToggle" onchange="MindHavenContext.updatePermissions({includeCoping: this.checked})" checked>
+                        <span>Share coping tool usage count</span>
+                    </label>
+                </div>
+                <div class="privacy-option">
+                    <label class="toggle-label-row">
+                        <input type="checkbox" id="contextJournalToggle" onchange="MindHavenContext.updatePermissions({includeJournal: this.checked})">
+                        <span>Share latest journal entry <em>(Default: OFF)</em></span>
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button class="secondary-btn" onclick="MindHavenSession.clearHistory(); closeContextModal();">Clear Chat History</button>
+                    <button class="primary-btn" onclick="closeContextModal()">Save & Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script src="chat/prompts.js"></script>
+    <script src="chat/safety.js"></script>
+    <script src="chat/ollama.js"></script>
+    <script src="chat/context.js"></script>
+    <script src="chat/actions.js"></script>
+    <script src="chat/session.js"></script>
+    <script src="chat/fallback.js"></script>
+    <script src="chat/chatbot.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="checkin.js"></script>
+    <script src="mentalhealth.js"></script>
+    <script src="coping.js"></script>
+    <script src="calmspace.js"></script>
+    <script src="journal.js"></script>
+    <script src="gratitude.js"></script>
+    <script src="moodcalendar.js"></script>
+    <script src="dailycheckin.js"></script>
+    <script src="streaks.js"></script>
+    <script src="breathing.js"></script>
+    <script src="cbt.js"></script>
+    <script src="triggers.js"></script>
+    <script src="sleep.js"></script>
+    <script src="reflection.js"></script>
+    <script src="recommendations.js"></script>
+    <script src="resources.js"></script>
+    <script src="insights.js"></script>
+    <script src="crisis.js"></script>
+    <script src="achievements.js"></script>
+    <script src="search.js"></script>
+    <script src="settings.js"></script>
+    <script src="mobile.js"></script>
+    <script src="lowenergy.js"></script>
+    <script src="emergency.js"></script>
+    <script src="assessment.js"></script>
+    <script src="goals.js"></script>
+    <script src="decisions.js"></script>
+    <script src="guidedjournal.js"></script>
+    <script src="student.js"></script>
+    <script src="supportcircle.js"></script>
+    <script src="safetyplan.js"></script>
+    <script src="pwa-install.js"></script>
+    <script src="shortcuts.js"></script>
+    <script src="swipe.js"></script>
+    
+    <!-- Service Worker Registration for PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js', {
+                    scope: './'
+                })
+                    .then((registration) => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                        registration.update();
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
